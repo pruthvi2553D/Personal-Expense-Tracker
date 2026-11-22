@@ -1,113 +1,100 @@
-
-let transactions = JSON.parse(
-    localStorage.getItem("transactions")
-) || [];
-
-const form = document.getElementById("expenseForm");
-
-function saveData() {
-    localStorage.setItem(
-        "transactions",
-        JSON.stringify(transactions)
-    );
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
 }
 
-function updateDashboard() {
-    let income = 0;
-    let expense = 0;
-
-    transactions.forEach(transaction => {
-        if (transaction.type === "Income") {
-            income += transaction.amount;
-        } else {
-            expense += transaction.amount;
-        }
-    });
-
-    document.getElementById("totalIncome").textContent =
-        "₹" + income.toFixed(2);
-
-    document.getElementById("totalExpense").textContent =
-        "₹" + expense.toFixed(2);
-
-    document.getElementById("totalBalance").textContent =
-        "₹" + (income - expense).toFixed(2);
-
-    displayTransactions();
+body {
+    background: #f1f5f9;
+    color: #1e293b;
+    padding: 30px;
 }
 
-function displayTransactions() {
-    const table = document.getElementById("transactionList");
+.container {
+    max-width: 1100px;
+    margin: auto;
+}
 
-    table.innerHTML = "";
+header {
+    margin-bottom: 30px;
+}
 
-    if (transactions.length === 0) {
-        table.innerHTML =
-            '<tr><td colspan="5">No transactions yet.</td></tr>';
-        return;
+header h1 {
+    font-size: 30px;
+    margin-bottom: 8px;
+}
+
+header p {
+    color: #64748b;
+}
+
+.summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px #00000010;
+}
+
+.card h3 {
+    color: #64748b;
+    font-size: 15px;
+    margin-bottom: 15px;
+}
+
+.card h2 {
+    font-size: 28px;
+}
+
+.income {
+    color: #16a34a;
+}
+
+.expense {
+    color: #dc2626;
+}
+
+.form-section, .transactions {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+}
+
+input, select {
+    padding: 12px;
+    margin: 10px 5px 10px 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+@media(max-width: 700px) {
+    .summary {
+        grid-template-columns: 1fr;
     }
 
-    transactions.forEach((transaction, index) => {
-        const row = document.createElement("tr");
-
-        const amountClass =
-            transaction.type === "Income"
-                ? "income-text"
-                : "expense-text";
-
-        row.innerHTML = `
-            <td>${transaction.title}</td>
-            <td>${transaction.category}</td>
-            <td>${transaction.date}</td>
-            <td class="${amountClass}">
-                ${transaction.type === "Income" ? "+" : "-"}₹${transaction.amount.toFixed(2)}
-            </td>
-            <td>
-                <button class="delete-btn"
-                    onclick="deleteTransaction(${index})">
-                    Delete
-                </button>
-            </td>
-        `;
-
-        table.appendChild(row);
-    });
-}
-
-form.addEventListener("submit", function(event) {
-    event.preventDefault();
-
-    const title = document.getElementById("title").value.trim();
-    const amount = Number(document.getElementById("amount").value);
-    const type = document.getElementById("type").value;
-    const category = document.getElementById("category").value;
-    const date = document.getElementById("date").value;
-
-    if (!title || !Number.isFinite(amount) || amount <= 0 || !date) {
-        alert("Please enter valid transaction details.");
-        return;
-    }
-
-    transactions.push({
-        title,
-        amount,
-        type,
-        category,
-        date
-    });
-
-    saveData();
-    updateDashboard();
-
-    form.reset();
-});
-
-function deleteTransaction(index) {
-    if (confirm("Are you sure you want to delete this transaction?")) {
-        transactions.splice(index, 1);
-        saveData();
-        updateDashboard();
+    body {
+        padding: 15px;
     }
 }
 
-updateDashboard();
