@@ -1,100 +1,58 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-}
+let transactions = [];
 
-body {
-    background: #f1f5f9;
-    color: #1e293b;
-    padding: 30px;
-}
+const form = document.getElementById("expense-form");
 
-.container {
-    max-width: 1100px;
-    margin: auto;
-}
+form.addEventListener("submit", function(event) {
+    event.preventDefault();
 
-header {
-    margin-bottom: 30px;
-}
+    const title = document.getElementById("title").value;
+    const amount = Number(document.getElementById("amount").value);
+    const type = document.getElementById("type").value;
 
-header h1 {
-    font-size: 30px;
-    margin-bottom: 8px;
-}
-
-header p {
-    color: #64748b;
-}
-
-.summary {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.card {
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 3px 12px #00000010;
-}
-
-.card h3 {
-    color: #64748b;
-    font-size: 15px;
-    margin-bottom: 15px;
-}
-
-.card h2 {
-    font-size: 28px;
-}
-
-.income {
-    color: #16a34a;
-}
-
-.expense {
-    color: #dc2626;
-}
-
-.form-section, .transactions {
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    margin-bottom: 25px;
-}
-
-input, select {
-    padding: 12px;
-    margin: 10px 5px 10px 0;
-    border: 1px solid #cbd5e1;
-    border-radius: 7px;
-}
-
-button {
-    background: #2563eb;
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 7px;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #1d4ed8;
-}
-
-@media(max-width: 700px) {
-    .summary {
-        grid-template-columns: 1fr;
+    if (!Number.isFinite(amount) || amount <= 0) {
+        alert("Enter a valid amount");
+        return;
     }
 
-    body {
-        padding: 15px;
-    }
-}
+    transactions.push({
+        title: title,
+        amount: amount,
+        type: type
+    });
 
+    updateDashboard();
+    form.reset();
+});
+
+function updateDashboard() {
+    let income = 0;
+    let expense = 0;
+
+    const list = document.getElementById("transaction-list");
+    list.innerHTML = "";
+
+    transactions.forEach(function(item) {
+        if (item.type === "income") {
+            income += item.amount;
+        } else {
+            expense += item.amount;
+        }
+
+        const li = document.createElement("li");
+        li.textContent = item.title + " - " +
+            (item.type === "income" ? "+" : "-") +
+            "₹" + item.amount.toFixed(2);
+
+        li.style.padding = "12px";
+        list.appendChild(li);
+    });
+
+    document.getElementById("income").textContent =
+        "₹" + income.toFixed(2);
+
+    document.getElementById("expense").textContent =
+        "₹" + expense.toFixed(2);
+
+    document.getElementById("balance").textContent =
+        "₹" + (income - expense).toFixed(2);
+}
